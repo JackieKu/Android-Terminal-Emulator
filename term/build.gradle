@@ -8,6 +8,13 @@ android {
         applicationId "jackpal.androidterm"
         minSdkVersion 4
         targetSdkVersion 24
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments '-C', 'src/main', '-j', Runtime.runtime.availableProcessors() + ''
+                abiFilters "armeabi-v7a"
+            }
+        }
     }
 
     externalNativeBuild {

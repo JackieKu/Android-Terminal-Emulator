@@ -1,11 +1,3 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-    }
-}
 apply plugin: 'com.android.library'
 
 repositories {
@@ -19,6 +11,13 @@ android {
     defaultConfig {
         minSdkVersion 4
         targetSdkVersion 24
+
+        externalNativeBuild {
+            ndkBuild {
+                arguments '-C', 'src/main', '-j', Runtime.runtime.availableProcessors() + ''
+                abiFilters "armeabi-v7a"
+            }
+        }
     }
 
     externalNativeBuild {
