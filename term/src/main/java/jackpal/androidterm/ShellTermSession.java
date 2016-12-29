@@ -201,10 +201,6 @@ public class ShellTermSession extends GenericTermSession {
         return result;
     }
 
-    private void onProcessExit(int result) {
-        onProcessExit();
-    }
-
     @Override
     public void finish() {
         hangupProcessGroup();

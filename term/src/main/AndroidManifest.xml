@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <permission
         android:name="jackpal.androidterm.permission.RUN_SCRIPT"
@@ -199,6 +200,33 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".autorun.CommandListActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:label="@string/title_command_list"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".autorun.CommandDetailActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:label="@string/title_command_detail"
+            android:parentActivityName=".autorun.CommandListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jackpal.androidterm.autorun.CommandListActivity"/>
+        </activity>
+        <receiver
+            android:name=".autorun.SystemEventReceiver"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".autorun.AutoRunService"
+            android:exported="false"/>
 
         <meta-data
             android:name="com.sec.android.support.multiwindow"

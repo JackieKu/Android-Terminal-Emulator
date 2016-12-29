@@ -277,4 +277,9 @@
   <string name="colorvalue_label_lock_button_column">LOCK</string>
   <string name="colorvalue_icon_text_entry_hint">Enter icon text</string>
   <!-- END SHORTCUT RELATED STRINGS -->
+
+  <string name="title_command_list">Commands</string>
+  <string name="title_command_detail">Command Detail</string>
+    <string name="discard">Discard changes</string>
+    <string name="save">Save</string>
 </resources>

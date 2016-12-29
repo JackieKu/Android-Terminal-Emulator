@@ -88,6 +88,8 @@ public class TermSession {
     private ByteBuffer mWriteByteBuffer;
     private CharsetEncoder mUTF8Encoder;
 
+    protected int mExitCode = -1;
+
     // Number of rows in the transcript
     private static final int TRANSCRIPT_ROWS = 10000;
 
@@ -112,7 +114,7 @@ public class TermSession {
     private FinishCallback mFinishCallback;
 
     private boolean mIsRunning = false;
-    private Handler mMsgHandler = new Handler() {
+    private Handler mMsgHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             if (!mIsRunning) {
@@ -124,7 +126,7 @@ public class TermSession {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        onProcessExit();
+                        onProcessExit(255);
                     }
                 });
             }
@@ -231,7 +233,8 @@ public class TermSession {
         mWriterThread.setName("TermSession output writer");
     }
 
-    protected void onProcessExit() {
+    protected void onProcessExit(int result) {
+        mExitCode = result;
         finish();
     }
 
@@ -644,5 +647,9 @@ public class TermSession {
         if (mFinishCallback != null) {
             mFinishCallback.onSessionFinish(this);
         }
+    }
+
+    public int getExitCode() {
+        return mExitCode;
     }
 }
