@@ -587,17 +587,9 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
         }
     }
 
-    protected static TermSession createTermSession(Context context, TermSettings settings, String initialCommand) throws IOException {
-        GenericTermSession session = new ShellTermSession(settings, initialCommand);
-        // XXX We should really be able to fetch this from within TermSession
-        session.setProcessExitMessage(context.getString(R.string.process_exit_message));
-
-        return session;
-    }
-
     private TermSession createTermSession() throws IOException {
         TermSettings settings = mSettings;
-        TermSession session = createTermSession(this, settings, getInitialCommand());
+        TermSession session = new ShellTermSession(settings, getInitialCommand());
         session.setFinishCallback(mTermService);
         return session;
     }

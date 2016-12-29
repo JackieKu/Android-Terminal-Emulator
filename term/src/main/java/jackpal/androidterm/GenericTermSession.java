@@ -55,7 +55,7 @@ class GenericTermSession extends TermSession {
     public static final int PROCESS_EXIT_FINISHES_SESSION = 0;
     public static final int PROCESS_EXIT_DISPLAYS_MESSAGE = 1;
 
-    private String mProcessExitMessage;
+    private final String mProcessExitMessage;
 
     private UpdateCallback mUTF8ModeNotify = new UpdateCallback() {
         public void onUpdate() {
@@ -69,6 +69,8 @@ class GenericTermSession extends TermSession {
         this.mTermFd = mTermFd;
 
         this.createdAt = System.currentTimeMillis();
+
+        mProcessExitMessage = App.getInstance().getString(R.string.process_exit_message);
 
         updatePrefs(settings);
     }
@@ -101,12 +103,6 @@ class GenericTermSession extends TermSession {
         // Inform the attached pty of our new size:
         setPtyWindowSize(rows, columns, 0, 0);
         super.updateSize(columns, rows);
-    }
-
-    /* XXX We should really get this ourselves from the resource bundle, but
-       we cannot hold a context */
-    public void setProcessExitMessage(String message) {
-        mProcessExitMessage = message;
     }
 
     @Override

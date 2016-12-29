@@ -36,6 +36,7 @@
         android:protectionLevel="dangerous"/>
 
     <application
+        android:name=".App"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_terminal"
