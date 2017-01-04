@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          android:id="@+id/script_name"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="16dp"
+          android:textSize="18sp"
+          android:textIsSelectable="true"
+          android:inputType="text"
+          android:imeOptions="flagNoFullscreen"
+          android:hint="@string/script_name"
+          tools:text="script_name.sh"
+          tools:showIn="@layout/command_detail">
+    <requestFocus/>
+</EditText>

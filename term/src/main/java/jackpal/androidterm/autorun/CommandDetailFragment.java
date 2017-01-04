@@ -2,7 +2,6 @@ package jackpal.androidterm.autorun;
 
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +18,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jackpal.androidterm.R;
+import jackpal.androidterm.util.ShowSoftKeyboard;
 import jackpal.androidterm.util.Unchecked;
 
 public class CommandDetailFragment extends Fragment {
@@ -51,12 +51,14 @@ public class CommandDetailFragment extends Fragment {
 
         readScript();
 
+        ShowSoftKeyboard.onFocus(mNameView, mEditorView);
+
         return rootView;
     }
 
     private void readScript() {
         if (mScript != null) {
-            mScriptName = mScript.getName();
+            mScriptName = mScript.getBaseName();
 
             try {
                 mContent = mScript.getContent();
@@ -67,10 +69,6 @@ public class CommandDetailFragment extends Fragment {
             mNameView.setText(mScriptName);
             mEditorView.setText(mContent);
         }
-    }
-
-    private static boolean isValidScriptName(String name) {
-        return !TextUtils.isEmpty(name) && !name.contains("/");
     }
 
     @Override
@@ -84,7 +82,7 @@ public class CommandDetailFragment extends Fragment {
             case R.id.menu_save:
                 try {
                     String newName = mNameView.getText().toString();
-                    if (!isValidScriptName(newName)) {
+                    if (!Script.isValidName(newName)) {
                         mNameView.setError(getString(R.string.invalid_script_name));
                         if (TextUtils.isEmpty(newName))
                             mNameView.setText(mScriptName);
@@ -92,7 +90,7 @@ public class CommandDetailFragment extends Fragment {
                     }
                     if (!mScriptName.equals(newName)) {
                         File oldPath = mScript.getPath();
-                        File newPath = new File(oldPath.getParent(), newName);
+                        File newPath = new File(oldPath.getParent(), newName + Script.EXTENSION);
                         if (oldPath.renameTo(newPath))
                             mScriptName = newName;
                         else {

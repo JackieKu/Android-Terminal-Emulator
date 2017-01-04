@@ -1,6 +1,7 @@
 package jackpal.androidterm.autorun;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.common.io.Files;
 
@@ -15,6 +16,8 @@ import rx.Single;
 import static jackpal.androidterm.RemoteInterface.quoteForBash;
 
 public final class Script implements Comparable<Script> {
+    public static final String EXTENSION = ".sh";
+
     private final File mPath;
 
     public Script(File path) {
@@ -23,6 +26,10 @@ public final class Script implements Comparable<Script> {
 
     String getName() {
         return mPath.getName();
+    }
+
+    String getBaseName() {
+        return Files.getNameWithoutExtension(mPath.getPath());
     }
 
     File getPath() {
@@ -56,6 +63,10 @@ public final class Script implements Comparable<Script> {
                     .setTitle(getName())
                     .start()
                 );
+    }
+
+    static boolean isValidName(String name) {
+        return !TextUtils.isEmpty(name) && !name.contains("/");
     }
 
     @Override

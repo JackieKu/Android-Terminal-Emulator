@@ -78,7 +78,7 @@ public class Scripts {
     private Scripts(File dir) {
         mDir = Objects.requireNonNull(dir);
         mScripts = new ArrayList<>();
-        File[] files = dir.listFiles(file -> file.isFile() && file.getName().endsWith(".sh"));
+        File[] files = dir.listFiles(file -> file.isFile() && file.getName().endsWith(Script.EXTENSION));
         if (files != null) {
             for (File f : files)
                 mScripts.add(new Script(f));

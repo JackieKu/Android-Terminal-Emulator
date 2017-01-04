@@ -5,16 +5,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <EditText android:id="@+id/script_name"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:padding="16dp"
-              android:textSize="18sp"
-              android:textIsSelectable="true"
-              android:inputType="text"
-              android:imeOptions="flagNoFullscreen"
-              android:hint="Script Name"
-              tools:text="script_name.sh" />
+    <include layout="@layout/script_name_editor" android:id="@+id/script_name"/>
 
     <View android:layout_width="match_parent"
         android:layout_height="1dp"
