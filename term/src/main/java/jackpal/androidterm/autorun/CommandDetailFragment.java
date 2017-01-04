@@ -2,6 +2,8 @@ package jackpal.androidterm.autorun;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,7 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +26,11 @@ public class CommandDetailFragment extends Fragment {
 
     private Script mScript;
 
-    @BindView(R.id.command_detail) EditText mContentView;
+    @BindView(R.id.script_name) EditText mNameView;
+    @BindView(R.id.script_editor) EditText mEditorView;
+
+    private String mScriptName = "";
+    private String mContent = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,17 +49,28 @@ public class CommandDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.command_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        if (mScript != null) {
-            String content;
-            try {
-                content = mScript.getContent();
-            } catch (Throwable e) {
-                content = "";
-            }
-            mContentView.setText(content);
-        }
+        readScript();
 
         return rootView;
+    }
+
+    private void readScript() {
+        if (mScript != null) {
+            mScriptName = mScript.getName();
+
+            try {
+                mContent = mScript.getContent();
+            } catch (Throwable e) {
+                mContent = "";
+            }
+
+            mNameView.setText(mScriptName);
+            mEditorView.setText(mContent);
+        }
+    }
+
+    private static boolean isValidScriptName(String name) {
+        return !TextUtils.isEmpty(name) && !name.contains("/");
     }
 
     @Override
@@ -66,7 +83,29 @@ public class CommandDetailFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_save:
                 try {
-                    mScript.setContent(mContentView.getText());
+                    String newName = mNameView.getText().toString();
+                    if (!isValidScriptName(newName)) {
+                        mNameView.setError(getString(R.string.invalid_script_name));
+                        if (TextUtils.isEmpty(newName))
+                            mNameView.setText(mScriptName);
+                        return true;
+                    }
+                    if (!mScriptName.equals(newName)) {
+                        File oldPath = mScript.getPath();
+                        File newPath = new File(oldPath.getParent(), newName);
+                        if (oldPath.renameTo(newPath))
+                            mScriptName = newName;
+                        else {
+                            Toast.makeText(getActivity(), R.string.rename_failed, Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                    }
+
+                    String newContent = mEditorView.getText().toString();
+                    if (!mContent.equals(newContent)) {
+                        mScript.setContent(newContent);
+                        mContent = newContent;
+                    }
                 } catch (IOException e) {
                     throw Unchecked.of(e);
                 }

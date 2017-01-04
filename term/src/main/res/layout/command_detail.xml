@@ -1,12 +1,36 @@
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:id="@+id/command_detail"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:padding="16dp"
-          android:textIsSelectable="true"
-          android:gravity="start|top"
-          android:inputType="textMultiLine|textLongMessage"
-          android:imeOptions="flagNoFullscreen"
-          tools:context="jackpal.androidterm.autorun.CommandDetailFragment"/>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:context="jackpal.androidterm.autorun.CommandDetailFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+    <EditText android:id="@+id/script_name"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:padding="16dp"
+              android:textSize="18sp"
+              android:textIsSelectable="true"
+              android:inputType="text"
+              android:imeOptions="flagNoFullscreen"
+              android:hint="Script Name"
+              tools:text="script_name.sh" />
+
+    <View android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignBottom="@id/script_name"
+        android:background="@color/primary" />
+
+    <EditText android:id="@+id/script_editor"
+              android:layout_width="match_parent"
+              android:layout_height="0dp"
+              android:layout_alignParentBottom="true"
+              android:layout_below="@id/script_name"
+              android:padding="16dp"
+              android:textSize="16sp"
+              android:textIsSelectable="true"
+              android:gravity="start|top"
+              android:inputType="textMultiLine|textLongMessage"
+              android:imeOptions="flagNoFullscreen"
+              tools:text="echo Hello World" />
+</RelativeLayout>

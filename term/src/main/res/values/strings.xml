@@ -282,4 +282,6 @@
   <string name="title_command_detail">Command Detail</string>
     <string name="discard">Discard changes</string>
     <string name="save">Save</string>
+    <string name="rename_failed">Rename failed.</string>
+    <string name="invalid_script_name">Name cannot be empty or contains \'/\'</string>
 </resources>
