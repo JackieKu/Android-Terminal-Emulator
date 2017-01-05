@@ -30,6 +30,7 @@ import android.content.Context;
    interface where necessary
    The idea for the implementation comes from an example in the documentation of
    android.app.Service */
+@Deprecated // API level < 5 is dead.
 public class ServiceForegroundCompat {
     private static Class<?>[] mSetForegroundSig = new Class[] {
         boolean.class };
