@@ -39,6 +39,7 @@ import jackpal.androidterm.emulatorview.TermSession;
 
 import jackpal.androidterm.compat.AndroidCompat;
 import jackpal.androidterm.compat.ServiceForegroundCompat;
+import jackpal.androidterm.emulatorview.UpdateCallback;
 import jackpal.androidterm.libtermexec.v1.*;
 import jackpal.androidterm.util.SessionList;
 import jackpal.androidterm.util.TermSettings;
@@ -99,25 +100,9 @@ public class TermService extends Service implements TermSession.FinishCallback
 
         compat = new ServiceForegroundCompat(this);
         mTermSessions = new SessionList();
-
-        int priority = Notification.PRIORITY_DEFAULT;
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        if (pref.getBoolean("statusbar_icon", true) == false) priority = Notification.PRIORITY_MIN;
-        Notification notification = new NotificationCompat.Builder(getApplicationContext())
-            .setContentTitle(getText(R.string.application_terminal))
-            .setContentText(getText(R.string.service_notify_text))
-            .setSmallIcon(R.drawable.ic_stat_service_notification_icon)
-            .setPriority(priority)
-            .build();
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        Intent notifyIntent = new Intent(this, Term.class);
-        notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
-        notification.contentIntent = pendingIntent;
-        compat.startForeground(RUNNING_NOTIFICATION, notification);
+        mTermSessions.addCallback(mUpdateNotificationCallback);
 
         Log.d(TermDebug.LOG_TAG, "TermService started");
-        return;
     }
 
     @SuppressLint("NewApi")
@@ -145,13 +130,13 @@ public class TermService extends Service implements TermSession.FinishCallback
             session.finish();
         }
         mTermSessions.clear();
-        return;
     }
 
     public SessionList getSessions() {
         return mTermSessions;
     }
 
+    @Override
     public void onSessionFinish(TermSession session) {
         mTermSessions.remove(session);
     }
@@ -226,6 +211,37 @@ public class TermService extends Service implements TermSession.FinishCallback
         }
     }
 
+    private final UpdateCallback mUpdateNotificationCallback = new UpdateCallback() {
+        private boolean mHasNotification;
+        @Override
+        public void onUpdate() {
+            if (mTermSessions.isEmpty())
+                compat.stopForeground(true);
+            else if (!mHasNotification) {
+                postNotification();
+                mHasNotification = true;
+            }
+        }
+    };
+
+    private void postNotification() {
+        int priority = Notification.PRIORITY_DEFAULT;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!pref.getBoolean("statusbar_icon", true)) priority = Notification.PRIORITY_MIN;
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setContentTitle(getText(R.string.application_terminal))
+                .setContentText(getText(R.string.service_notify_text))
+                .setSmallIcon(R.drawable.ic_stat_service_notification_icon)
+                .setPriority(priority)
+                .build();
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+        Intent notifyIntent = new Intent(this, Term.class);
+        notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
+        notification.contentIntent = pendingIntent;
+        compat.startForeground(RUNNING_NOTIFICATION, notification);
+    }
+
     private final class RBinderCleanupCallback implements TermSession.FinishCallback {
         private final PendingIntent result;
         private final ResultReceiver callback;
@@ -241,7 +257,7 @@ public class TermService extends Service implements TermSession.FinishCallback
 
             callback.send(0, new Bundle());
 
-            mTermSessions.remove(session);
+            TermService.this.onSessionFinish(session);
         }
     }
 }
