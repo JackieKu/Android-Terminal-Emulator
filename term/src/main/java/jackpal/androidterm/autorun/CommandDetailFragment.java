@@ -89,7 +89,7 @@ public class CommandDetailFragment extends Fragment {
                         return true;
                     }
                     if (!mScriptName.equals(newName)) {
-                        File oldPath = mScript.getPath();
+                        File oldPath = mScript.getFile();
                         File newPath = new File(oldPath.getParent(), newName + Script.EXTENSION);
                         if (oldPath.renameTo(newPath))
                             mScriptName = newName;

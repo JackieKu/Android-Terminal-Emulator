@@ -32,7 +32,7 @@ public final class Script implements Comparable<Script> {
         return Files.getNameWithoutExtension(mPath.getPath());
     }
 
-    File getPath() {
+    File getFile() {
         return mPath;
     }
 
@@ -59,14 +59,19 @@ public final class Script implements Comparable<Script> {
 
     public Single<Integer> run() {
         return Headless.getInstance()
-                .flatMap(h -> h.newSession(". " + quoteForBash(getPath().getAbsolutePath()))
+                .flatMap(h -> h.newSession(". " + quoteForBash(getFile().getAbsolutePath()))
                     .setTitle(getName())
                     .start()
                 );
     }
 
     static boolean isValidName(String name) {
-        return !TextUtils.isEmpty(name) && !name.contains("/");
+        return !(
+            TextUtils.isEmpty(name)
+            || ".".equals(name)
+            || "..".equals(name)
+            || name.contains("/")
+        );
     }
 
     @Override

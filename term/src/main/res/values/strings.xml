@@ -286,4 +286,6 @@
     <string name="invalid_script_name">Name cannot be empty or contains \'/\'</string>
     <string name="new_script">New Script</string>
     <string name="script_name">Script Name</string>
+    <string name="confirm_delete">Delete %1$s?</string>
+    <string name="script_running">Started %1$s.</string>
 </resources>

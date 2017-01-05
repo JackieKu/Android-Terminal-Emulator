@@ -3,7 +3,8 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="horizontal">
+              android:orientation="horizontal"
+              android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/id"
@@ -12,16 +13,21 @@
         android:layout_margin="@dimen/text_margin"
         android:layout_weight="1"
         android:textAppearance="?android:attr/textAppearanceListItem"
-        tools:text="01_autorun.sh"
-        />
+        tools:text="01_autorun.sh" />
+
+    <ImageView
+        android:id="@+id/edit"
+        android:src="@drawable/ic_edit"
+        style="@style/command_list_button"/>
+
+    <ImageView
+        android:id="@+id/delete"
+        android:src="@drawable/ic_delete"
+        style="@style/command_list_button"/>
 
     <ImageView
         android:id="@+id/enabled"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
         android:src="@drawable/ic_checked"
-        android:layout_gravity="center_vertical"/>
+        style="@style/command_list_button"/>
 
 </LinearLayout>

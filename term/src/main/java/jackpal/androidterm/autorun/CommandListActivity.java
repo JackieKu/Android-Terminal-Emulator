@@ -146,14 +146,14 @@ public class CommandListActivity extends Activity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
+            final View mView;
 
             @BindView(R.id.id) TextView mIdView;
-            @BindView(R.id.enabled) ImageView mEnabledView;
+            @BindView(R.id.delete) ImageView mDeleteButton;
+            @BindView(R.id.edit) ImageView mEditButton;
+            @BindView(R.id.enabled) ImageView mEnabledToggle;
 
-            public Script mScript;
-
-            public ViewHolder(View view) {
+            ViewHolder(View view) {
                 super(view);
                 mView = view;
 
@@ -161,25 +161,36 @@ public class CommandListActivity extends Activity {
             }
 
             void bind(int position) {
-                mScript = scripts().list().get(position);
+                Script script = scripts().list().get(position);
 
-                mIdView.setText(mScript.getName());
-                mView.setOnClickListener(onItemDetail(mScript.getPath().getAbsolutePath()));
+                mIdView.setText(script.getName());
 
-                setIconTint(mEnabledView, mScript.isEnabled());
-                mEnabledView.setOnClickListener(v -> {
-                    mScript.toggleEnabled();
+                mView.setOnClickListener(v -> {
+                    script.run().subscribe();
+                    Toast.makeText(CommandListActivity.this, getString(R.string.script_running, script.getName()), Toast.LENGTH_SHORT).show();
+                });
+
+                mEditButton.setOnClickListener(onEditItem(script.getFile().getAbsolutePath()));
+                mDeleteButton.setOnClickListener(v ->
+                    new AlertDialog.Builder(CommandListActivity.this)
+                        .setMessage(getString(R.string.confirm_delete, script.getName()))
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            if (script.getFile().delete())
+                                refresh();
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show()
+                );
+
+                setIconTint(mEnabledToggle, script.isEnabled());
+                mEnabledToggle.setOnClickListener(v -> {
+                    script.toggleEnabled();
                     notifyItemChanged(position);
                 });
             }
-
-            @Override
-            public String toString() {
-                return mScript.toString();
-            }
         }
 
-        private View.OnClickListener onItemDetail(String id) {
+        private View.OnClickListener onEditItem(String id) {
             return mTwoPane ?
                     v -> {
                         Bundle arguments = new Bundle();

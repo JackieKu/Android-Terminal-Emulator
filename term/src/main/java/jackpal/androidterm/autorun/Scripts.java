@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import jackpal.androidterm.App;
@@ -26,11 +25,9 @@ public class Scripts {
     private final List<Script> mScripts;
 
     public static Single<Scripts> forAutoRun() {
-        return Single.fromCallable(GET_AUTO_RUN)
+        return Single.fromCallable(Scripts::getAutoRun)
             .subscribeOn(Schedulers.io());
     }
-
-    private static final Callable<Scripts> GET_AUTO_RUN = Scripts::getAutoRun;
 
     public static Scripts getAutoRun() {
         Log.v(TAG, "AUTORUN_DIR: " + AUTORUN_DIR);
