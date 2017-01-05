@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal Emulatzailea</string>
    <string name="preferences">Hobespenak</string>
    <string name="new_window">Leiho berria</string>
    <string name="close_window">Leihoa itxi</string>

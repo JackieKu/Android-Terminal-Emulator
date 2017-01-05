@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal Emülatörü</string>
    <string name="preferences">Tercihler</string>
    <string name="reset">Terminali yeniden başlat</string>
    <string name="send_email">Email olarak yolla</string>

@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Emulador de Terminal</string>
    <string name="preferences">Preferências</string>
    <string name="new_window">Nova janela</string>
    <string name="close_window">Fechar janela</string>

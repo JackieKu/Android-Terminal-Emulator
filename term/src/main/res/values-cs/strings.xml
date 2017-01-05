@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal Emulator</string>
    <string name="preferences">Nastavení</string>
    <string name="new_window">Nové okno</string>
    <string name="close_window">Zavřít okno</string>

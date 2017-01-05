@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Emulatore terminale</string>
    <string name="preferences">Impostazioni</string>
    <string name="new_window">Nuova finestra</string>
    <string name="close_window">Chiudi finestra</string>

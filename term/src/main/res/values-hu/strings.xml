@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminál Emulátor</string>
    <string name="preferences">Beállítások</string>
    <string name="new_window">Új ablak</string>
    <string name="close_window">Ablak bezárása</string>

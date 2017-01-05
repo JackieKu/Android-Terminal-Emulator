@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal Emulator</string>
    <string name="preferences">Preferências</string>
    <string name="reset">Reset terminal</string>
    <string name="send_email">Email para</string>

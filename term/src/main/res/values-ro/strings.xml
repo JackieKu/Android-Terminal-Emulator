@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 --><resources>
-   <string name="application_terminal">"Emulator Terminal"</string>
    <string name="preferences">"Preferinţe"</string>
    <string name="new_window">"Fereastră nouă"</string>
    <string name="close_window">"Închideţi fereastra"</string>

@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">터미널 에뮬레이터</string>
    <string name="preferences">환경 설정</string>
    <string name="new_window">새로운 창</string>
    <string name="close_window">창 닫기</string>

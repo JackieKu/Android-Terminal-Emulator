@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal</string>
    <string name="preferences">Preferencias</string>
    <string name="new_window">Nueva ventana</string>
    <string name="close_window">Cerrar ventana</string>

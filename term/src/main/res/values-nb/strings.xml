@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminalemulator</string>
    <string name="preferences">Innstillinger</string>
    <string name="new_window">Nytt vindu</string>
    <string name="close_window">Lukk vindu</string>

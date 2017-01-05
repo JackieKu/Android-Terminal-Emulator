@@ -15,7 +15,6 @@
  * limitations under the License.
 -->
 <resources>
-   <string name="application_terminal">Terminal Emulator</string>
    <string name="preferences">გამართვა</string>
    <string name="new_window">ახალი ფანჯარა</string>
    <string name="close_window">ფანჯრის დახურვა</string>

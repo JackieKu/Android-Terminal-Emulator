@@ -15,7 +15,6 @@
   <string name="alt_sends_esc">Клавиша Alt посылает ESC</string>
   <string name="alt_sends_esc_summary_off">Клавиша Alt не посылает ESC</string>
   <string name="alt_sends_esc_summary_on">Клавиша Alt посылает ESC</string>
-  <string name="application_terminal">Терминал</string>
   <string name="close_window">Закрыть окно</string>
   <string name="colorvalue_icon_text_entry_hint">Введите текст для значка</string>
   <string name="colorvalue_label_lock_button_column">LOCK</string>

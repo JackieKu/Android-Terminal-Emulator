@@ -16,7 +16,6 @@
 -->
 <resources>
    <!-- == Interface == -->
-   <string name="application_terminal">Terminal Emulator</string>
    <string name="preferences">Paramètres</string>
    <string name="new_window">Nouvelle fenêtre</string>
    <string name="close_window">Fermer fenêtre</string>
