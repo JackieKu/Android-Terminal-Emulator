@@ -19,6 +19,8 @@ package jackpal.androidterm;
 import android.Manifest;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+
+import jackpal.androidterm.autorun.CommandListActivity;
 import jackpal.androidterm.compat.ActionBarCompat;
 import jackpal.androidterm.compat.ActivityCompat;
 import jackpal.androidterm.compat.AndroidCompat;
@@ -817,61 +819,86 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_preferences) {
-            doPreferences();
-        } else if (id == R.id.menu_paste) {
-            doPaste();
-        } else if (id == R.id.menu_new_window) {
-            doCreateNewWindow();
-        } else if (id == R.id.menu_plus) {
-            EmulatorView view = getCurrentEmulatorView();
-            if (view != null) {
-                int key = mSettings.getActionBarPlusKeyAction();
-                return doSendActionBarKey(view, key);
+        switch (id) {
+            case R.id.menu_preferences:
+                doPreferences();
+                break;
+            case R.id.menu_paste:
+                doPaste();
+                break;
+            case R.id.menu_new_window:
+                doCreateNewWindow();
+                break;
+            case R.id.menu_plus: {
+                EmulatorView view = getCurrentEmulatorView();
+                if (view != null) {
+                    int key = mSettings.getActionBarPlusKeyAction();
+                    return doSendActionBarKey(view, key);
+                }
+                break;
             }
-//        } else if (id == R.id.menu_minus) {
-//            EmulatorView view = getCurrentEmulatorView();
-//            if (view != null) {
-//                int key = mSettings.getActionBarMinusKeyAction();
-//                return doSendActionBarKey(view, key);
+//            case R.id.menu_minus: {
+//                EmulatorView view = getCurrentEmulatorView();
+//                if (view != null) {
+//                    int key = mSettings.getActionBarMinusKeyAction();
+//                    return doSendActionBarKey(view, key);
+//                }
+//                break;
 //            }
-        } else if (id == R.id.menu_close_window) {
-            confirmCloseWindow();
-        } else if (id == R.id.menu_x) {
-            EmulatorView view = getCurrentEmulatorView();
-            if (view != null) {
-                int key = mSettings.getActionBarXKeyAction();
-                return doSendActionBarKey(view, key);
+            case R.id.menu_close_window:
+                confirmCloseWindow();
+                break;
+            case R.id.menu_x: {
+                EmulatorView view = getCurrentEmulatorView();
+                if (view != null) {
+                    int key = mSettings.getActionBarXKeyAction();
+                    return doSendActionBarKey(view, key);
+                }
+                break;
             }
-//        } else if  (id == R.id.menu_user) {
-//            EmulatorView view = getCurrentEmulatorView();
-//            if (view != null) {
-//                int key = mSettings.getActionBarUserKeyAction();
-//                return doSendActionBarKey(view, key);
+//            case R.id.menu_user: {
+//                EmulatorView view = getCurrentEmulatorView();
+//                if (view != null) {
+//                    int key = mSettings.getActionBarUserKeyAction();
+//                    return doSendActionBarKey(view, key);
+//                }
+//                break;
 //            }
-        } else if (id == R.id.menu_window_list) {
-            startActivityForResult(new Intent(this, WindowList.class), REQUEST_CHOOSE_WINDOW);
-        } else if (id == R.id.menu_reset) {
-            doResetTerminal();
-            Toast toast = Toast.makeText(this,R.string.reset_toast_notification,Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-        } else if (id == R.id.menu_send_email) {
-            doEmailTranscript();
-        } else if (id == R.id.menu_special_keys) {
-            doDocumentKeys();
-        } else if (id == R.id.menu_toggle_soft_keyboard) {
-            doToggleSoftKeyboard();
-        } else if (id == R.id.menu_toggle_function_bar) {
-            setFunctionBar(2);
-        } else if (id == R.id.menu_toggle_wakelock) {
-            doToggleWakeLock();
-        } else if (id == R.id.menu_toggle_wifilock) {
-            doToggleWifiLock();
-        } else if  (id == R.id.action_help) {
-            Intent openHelp = new Intent(Intent.ACTION_VIEW,
-                Uri.parse(getString(R.string.help_url)));
+            case R.id.menu_window_list:
+                startActivityForResult(new Intent(this, WindowList.class), REQUEST_CHOOSE_WINDOW);
+                break;
+            case R.id.menu_reset:
+                doResetTerminal();
+                Toast toast = Toast.makeText(this, R.string.reset_toast_notification, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                break;
+            case R.id.menu_send_email:
+                doEmailTranscript();
+                break;
+            case R.id.menu_special_keys:
+                doDocumentKeys();
+                break;
+            case R.id.menu_toggle_soft_keyboard:
+                doToggleSoftKeyboard();
+                break;
+            case R.id.menu_toggle_function_bar:
+                setFunctionBar(2);
+                break;
+            case R.id.menu_toggle_wakelock:
+                doToggleWakeLock();
+                break;
+            case R.id.menu_toggle_wifilock:
+                doToggleWifiLock();
+                break;
+            case R.id.action_help:
+                Intent openHelp = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.help_url)));
                 startActivity(openHelp);
+                break;
+            case R.id.menu_scripts:
+                startActivity(new Intent(this, CommandListActivity.class));
+                break;
         }
         // Hide the action bar if appropriate
         if (mActionBarMode >= TermSettings.ACTION_BAR_MODE_HIDES) {

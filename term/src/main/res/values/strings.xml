@@ -278,8 +278,6 @@
   <string name="colorvalue_icon_text_entry_hint">Enter icon text</string>
   <!-- END SHORTCUT RELATED STRINGS -->
 
-  <string name="title_command_list">Commands</string>
-  <string name="title_command_detail">Command Detail</string>
     <string name="discard">Discard changes</string>
     <string name="save">Save</string>
     <string name="rename_failed">Rename failed.</string>
@@ -288,4 +286,6 @@
     <string name="script_name">Script Name</string>
     <string name="confirm_delete">Delete %1$s?</string>
     <string name="script_running">Started %1$s.</string>
+    <string name="scripts">Scripts</string>
+    <string name="edit_script">Edit Script</string>
 </resources>

@@ -32,6 +32,8 @@
         android:title="@string/user"
         android:icon="@drawable/ic_action_help" />
 -->
+    <item android:id="@+id/menu_scripts"
+          android:title="@string/scripts"/>
     <item android:id="@+id/menu_new_window"
         android:title="@string/new_window"
         android:icon="@drawable/ic_menu_add" />

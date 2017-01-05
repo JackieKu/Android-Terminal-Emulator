@@ -204,13 +204,13 @@
         <activity
             android:name=".autorun.CommandListActivity"
             android:windowSoftInputMode="stateVisible"
-            android:label="@string/title_command_list"
+            android:label="@string/scripts"
             android:exported="true">
         </activity>
         <activity
             android:name=".autorun.CommandDetailActivity"
             android:windowSoftInputMode="stateVisible"
-            android:label="@string/title_command_detail"
+            android:label="@string/edit_script"
             android:parentActivityName=".autorun.CommandListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
