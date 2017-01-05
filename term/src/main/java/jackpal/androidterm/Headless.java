@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -19,16 +18,32 @@ import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.AsyncSubject;
 import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class Headless {
-    private final BehaviorSubject<Optional<TermService>> mTermServiceSubject = BehaviorSubject.create(Optional.empty());
+    private final static Headless INSTANCE = new Headless();
 
-    private static final Single<Headless> INSTANCE = newInstance();
+    private int mSessions;
+    private TermService mService;
+
+    private final PublishSubject<TermService> mServiceSubject = PublishSubject.create();
+    private final ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            TermService.TSBinder binder = (TermService.TSBinder) service;
+            mServiceSubject.onNext(mService = binder.getService());
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+        }
+    };
 
     public static Single<Headless> getInstance() {
-        return INSTANCE;
+        return Single.just(INSTANCE).observeOn(AndroidSchedulers.mainThread());
     }
 
     public SessionBuilder newSession(String cmdLine) {
@@ -55,6 +70,18 @@ public class Headless {
         }
 
         public Single<Integer> start() {
+            if (mService == null) {
+                Intent intent = new Intent(App.getInstance(), TermService.class);
+                if (!App.getInstance().bindService(intent, mConnection, BIND_AUTO_CREATE))
+                    throw new IllegalStateException("Cannot bind term service.");
+
+                return mServiceSubject.first().toSingle().flatMap(termService -> startSession());
+            }
+
+            return startSession();
+        }
+
+        private Single<Integer> startSession() {
             String title = mTitle;
             if (title == null)
                 title = isExec(mCmdLine) ? mCmdLine.substring(5).trim() : mCmdLine;
@@ -65,17 +92,23 @@ public class Headless {
             } catch (IOException e) {
                 throw Unchecked.of(e);
             }
-            TermService service = mTermServiceSubject.getValue().get();
 
             final AsyncSubject<Integer> resultSubject = AsyncSubject.create();
             session.setTitle(title);
             session.setFinishCallback(s -> {
-                service.onSessionFinish(s);
+                mService.onSessionFinish(s);
 
                 resultSubject.onNext(s.getExitCode());
                 resultSubject.onCompleted();
+
+                mSessions--;
+                if (mSessions == 0) {
+                    App.getInstance().unbindService(mConnection);
+                    mService = null;
+                }
             });
-            service.getSessions().add(session);
+            mService.getSessions().add(session);
+            mSessions++;
 
             String handle = UUID.randomUUID().toString();
             ((GenericTermSession)session).setHandle(handle);
@@ -105,32 +138,6 @@ public class Headless {
         return false;
     }
 
-    private static Single<Headless> newInstance() {
-        final Headless h = new Headless();
-        return h.mTermServiceSubject
-                .first(Optional::isPresent)
-                .toSingle()
-                .map(x -> h)
-                .cache()
-                .observeOn(AndroidSchedulers.mainThread())
-                ;
-    }
-
     private Headless() {
-        ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName className, IBinder service) {
-                TermService.TSBinder binder = (TermService.TSBinder) service;
-                mTermServiceSubject.onNext(Optional.of(binder.getService()));
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName className) {
-                mTermServiceSubject.onNext(Optional.empty());
-            }
-        };
-        Intent intent = new Intent(App.getInstance(), TermService.class);
-        if (!App.getInstance().bindService(intent, connection, BIND_AUTO_CREATE))
-            throw new IllegalStateException("Cannot bind term service.");
     }
 }
