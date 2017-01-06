@@ -51,7 +51,7 @@ public class CommandDetailFragment extends Fragment {
 
         readScript();
 
-        ShowSoftKeyboard.onFocus(mNameView, mEditorView);
+        ShowSoftKeyboard.onFocusOrClick(mNameView, mEditorView);
 
         return rootView;
     }

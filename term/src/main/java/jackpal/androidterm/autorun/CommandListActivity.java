@@ -1,11 +1,13 @@
 package jackpal.androidterm.autorun;
 
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.FileObserver;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,15 +32,18 @@ import jackpal.androidterm.R;
 import jackpal.androidterm.util.ShowSoftKeyboard;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
 
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
 
 public class CommandListActivity extends Activity {
     private static final String TAG = "CommandListActivity";
 
-    private boolean mTwoPane;
+    private PaneMode mPaneMode;
 
     private final Handler mUiHandler = new Handler();
+    private boolean mStopped;
+    private boolean mRefreshOnStart;
 
     @BindView(R.id.command_list) RecyclerView mRecyclerView;
 
@@ -49,11 +55,7 @@ public class CommandListActivity extends Activity {
 
         mRecyclerView.setAdapter(new ScriptRecyclerViewAdapter());
 
-        // The detail container view will be present only in the
-        // large-screen layouts (res/values-w900dp).
-        // If this view is present, then the
-        // activity should be in two-pane mode.
-        mTwoPane = findViewById(R.id.command_detail_container) != null;
+        mPaneMode = findViewById(R.id.command_detail_container) != null ? new TwoPane() : new OnePane();
     }
 
     @Override
@@ -72,6 +74,28 @@ public class CommandListActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mStopped = false;
+        if (mRefreshOnStart)
+            getAdapter().refresh();
+    }
+
+    @Override
+    protected void onStop() {
+        mStopped = true;
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        getAdapter().mFileObserver.stopWatching();
+        super.onDestroy();
     }
 
     private void onNewScript() {
@@ -97,7 +121,6 @@ public class CommandListActivity extends Activity {
                         Log.e(TAG, "", e);
                         Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                    getAdapter().refresh();
                 } else if (!name.isEmpty()) {
                     mUiHandler.post(() -> openNewScriptDialog(true));
                 }
@@ -112,13 +135,37 @@ public class CommandListActivity extends Activity {
 
     final class ScriptRecyclerViewAdapter extends RecyclerView.Adapter<ScriptRecyclerViewAdapter.ViewHolder> {
         private final BehaviorSubject<Scripts> mScriptsSubject = BehaviorSubject.create(Scripts.EMPTY);
+        private final PublishSubject<Integer> mDirChangedSubject = PublishSubject.create();
+        private final FileObserver mFileObserver = new FileObserver(Scripts.AUTORUN_DIR.getAbsolutePath()) {
+            @Override
+            public void onEvent(int event, String path) {
+                switch (event) {
+                    case ATTRIB:
+                    case CREATE:
+                    case DELETE:
+                    case MOVED_FROM:
+                    case MOVED_TO:
+                        mDirChangedSubject.onNext(event);
+                        break;
+                }
+            }
+        };
 
         ScriptRecyclerViewAdapter() {
             mScriptsSubject
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(scripts -> notifyDataSetChanged())
                 ;
-
+            mScriptsSubject
+                .first()
+                .subscribe(scripts -> mFileObserver.startWatching())
+                ;
+            mDirChangedSubject
+                .throttleWithTimeout(300, TimeUnit.MILLISECONDS)
+                .onBackpressureLatest()
+                .observeOn(AndroidSchedulers.mainThread(), 1)
+                .subscribe(event -> refresh())
+                ;
             refresh();
         }
 
@@ -128,7 +175,13 @@ public class CommandListActivity extends Activity {
         }
 
         private void refresh() {
+            if (mStopped) {
+                mRefreshOnStart = true;
+                return;
+            }
+
             Scripts.forAutoRun().subscribe(mScriptsSubject::onNext);
+            mRefreshOnStart = false;
         }
 
         private Scripts scripts() {
@@ -149,6 +202,7 @@ public class CommandListActivity extends Activity {
             final View mView;
 
             @BindView(R.id.id) TextView mIdView;
+            @BindView(R.id.start) ImageView mStartButton;
             @BindView(R.id.delete) ImageView mDeleteButton;
             @BindView(R.id.edit) ImageView mEditButton;
             @BindView(R.id.enabled) ImageView mEnabledToggle;
@@ -165,18 +219,20 @@ public class CommandListActivity extends Activity {
 
                 mIdView.setText(script.getName());
 
-                mView.setOnClickListener(v -> {
+                mStartButton.setOnClickListener(v -> {
                     script.run().subscribe();
                     Toast.makeText(CommandListActivity.this, getString(R.string.script_running, script.getName()), Toast.LENGTH_SHORT).show();
                 });
 
-                mEditButton.setOnClickListener(onEditItem(script.getFile().getAbsolutePath()));
+                //mEditButton.setOnClickListener(mPaneMode.onEditItem(script.getFile().getAbsolutePath()));
+                mView.setOnClickListener(mPaneMode.onEditItem(script.getFile().getAbsolutePath()));
+
                 mDeleteButton.setOnClickListener(v ->
                     new AlertDialog.Builder(CommandListActivity.this)
                         .setMessage(getString(R.string.confirm_delete, script.getName()))
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                            if (script.getFile().delete())
-                                refresh();
+                            if (!script.getFile().delete())
+                                Log.w(TAG, "Delete file failed.");
                         })
                         .setNegativeButton(android.R.string.no, null)
                         .show()
@@ -189,25 +245,43 @@ public class CommandListActivity extends Activity {
                 });
             }
         }
+    }
 
-        private View.OnClickListener onEditItem(String id) {
-            return mTwoPane ?
-                    v -> {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(CommandDetailFragment.ARG_ITEM_ID, id);
-                        CommandDetailFragment fragment = new CommandDetailFragment();
-                        fragment.setArguments(arguments);
-                        getFragmentManager().beginTransaction()
-                                .replace(R.id.command_detail_container, fragment)
-                                .commit();
-                    } :
-                    v -> {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, CommandDetailActivity.class);
-                        intent.putExtra(CommandDetailFragment.ARG_ITEM_ID, id);
+    private interface PaneMode {
+        View.OnClickListener onEditItem(String id);
+    }
 
-                        context.startActivity(intent);
-                    };
+    private class OnePane implements PaneMode {
+        @Override
+        public View.OnClickListener onEditItem(String id) {
+            return v -> {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, CommandDetailActivity.class);
+                intent.putExtra(CommandDetailFragment.ARG_ITEM_ID, id);
+
+                context.startActivity(intent);
+            };
+        }
+    }
+
+    private class TwoPane implements PaneMode {
+        @Override
+        public View.OnClickListener onEditItem(String id) {
+            return v -> {
+                FragmentManager fm = getFragmentManager();
+
+                if (fm.findFragmentById(R.id.command_detail_container) != null)
+                    fm.popBackStack();
+
+                Bundle arguments = new Bundle();
+                arguments.putString(CommandDetailFragment.ARG_ITEM_ID, id);
+                CommandDetailFragment fragment = new CommandDetailFragment();
+                fragment.setArguments(arguments);
+                fm.beginTransaction()
+                        .replace(R.id.command_detail_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            };
         }
     }
 

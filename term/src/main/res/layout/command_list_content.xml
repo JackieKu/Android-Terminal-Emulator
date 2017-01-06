@@ -18,6 +18,12 @@
     <ImageView
         android:id="@+id/edit"
         android:src="@drawable/ic_edit"
+        android:visibility="gone"
+        style="@style/command_list_button"/>
+
+    <ImageView
+        android:id="@+id/start"
+        android:src="@drawable/ic_start"
         style="@style/command_list_button"/>
 
     <ImageView

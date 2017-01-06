@@ -23,6 +23,13 @@ public class ShowSoftKeyboard {
             view.setOnClickListener(SHOW_ON_CLICK);
     }
 
+    public static void onFocusOrClick(View... views) {
+        for (View view : views) {
+            view.setOnFocusChangeListener(SHOW_ON_FOCUS);
+            view.setOnClickListener(SHOW_ON_CLICK);
+        }
+    }
+
     public static void show(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
