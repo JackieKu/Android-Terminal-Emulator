@@ -44,7 +44,7 @@
         android:theme="@style/Theme">
         <activity
             android:name=".Term"
-            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible">
             <intent-filter>
@@ -73,6 +73,7 @@
 
         <activity
             android:name=".RemoteInterface"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="jackpal.androidterm.OPEN_NEW_WINDOW"/>
@@ -128,6 +129,7 @@
 
         <activity
             android:name=".RunScript"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:excludeFromRecents="true"
             android:permission="jackpal.androidterm.permission.RUN_SCRIPT">
             <intent-filter>
@@ -138,6 +140,7 @@
         </activity>
         <activity
             android:name=".RunShortcut"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="jackpal.androidterm.RUN_SHORTCUT"/>
@@ -147,10 +150,12 @@
         </activity>
         <activity
             android:name=".TermPreferences"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:label="@string/preferences"
             android:theme="@style/Theme.Holo.Light"/>
         <activity
             android:name=".WindowList"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:label="@string/window_list"
             android:theme="@style/Theme.Holo.Light"/>
 
@@ -164,7 +169,7 @@
 
         <activity
             android:name=".shortcuts.AddShortcut"
-            android:configChanges="orientation|keyboard|keyboardHidden"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:label="@string/activity_shortcut_create"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
@@ -182,7 +187,7 @@
         </activity>
         <activity
             android:name=".shortcuts.FSNavigator"
-            android:configChanges="orientation|keyboardHidden"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:exported="true"
             android:label="@string/addshortcut_button_find_command"
             android:launchMode="singleTop">
@@ -203,12 +208,14 @@
 
         <activity
             android:name=".autorun.CommandListActivity"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:windowSoftInputMode="stateVisible"
             android:label="@string/scripts"
             android:exported="true">
         </activity>
         <activity
             android:name=".autorun.CommandDetailActivity"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:windowSoftInputMode="stateVisible"
             android:label="@string/edit_script"
             android:parentActivityName=".autorun.CommandListActivity">
