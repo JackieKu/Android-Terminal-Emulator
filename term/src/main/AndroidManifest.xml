@@ -208,7 +208,7 @@
 
         <activity
             android:name=".autorun.CommandListActivity"
-            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode"
             android:label="@string/scripts"
             android:exported="true">
         </activity>
