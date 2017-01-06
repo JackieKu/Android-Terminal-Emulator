@@ -30,6 +30,8 @@ import butterknife.ButterKnife;
 import jackpal.androidterm.R;
 
 import jackpal.androidterm.util.ShowSoftKeyboard;
+import rx.Completable;
+import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
@@ -106,12 +108,12 @@ public class CommandListActivity extends Activity {
         EditText editView = (EditText)getLayoutInflater().inflate(R.layout.script_name_editor, null, false);
         if (hasError)
             editView.setError(getString(R.string.invalid_script_name));
-        ShowSoftKeyboard.onClick(editView);
+        ShowSoftKeyboard.onFocusOrClick(editView);
 
         new AlertDialog.Builder(this)
             .setTitle(R.string.script_name)
             .setView(editView)
-            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            .setPositiveButton(android.R.string.ok, (d, which) -> {
                 String name = editView.getText().toString();
                 if (Script.isValidName(name)) {
                     try {
@@ -126,7 +128,7 @@ public class CommandListActivity extends Activity {
                 }
             })
             .setNegativeButton(android.R.string.cancel, null)
-            .show().getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            .show();
     }
 
     private ScriptRecyclerViewAdapter getAdapter() {
@@ -164,8 +166,10 @@ public class CommandListActivity extends Activity {
                 .throttleWithTimeout(300, TimeUnit.MILLISECONDS)
                 .onBackpressureLatest()
                 .observeOn(AndroidSchedulers.mainThread(), 1)
-                .subscribe(event -> refresh())
+                .concatMap(event -> refresh().toObservable())
+                .subscribe()
                 ;
+
             refresh();
         }
 
@@ -174,14 +178,17 @@ public class CommandListActivity extends Activity {
             return scripts().list().size();
         }
 
-        private void refresh() {
+        private Completable refresh() {
             if (mStopped) {
                 mRefreshOnStart = true;
-                return;
+                return Completable.complete();
             }
 
-            Scripts.forAutoRun().subscribe(mScriptsSubject::onNext);
             mRefreshOnStart = false;
+
+            Single<Scripts> scripts = Scripts.forAutoRun().cache();
+            scripts.subscribe(mScriptsSubject::onNext);
+            return scripts.toCompletable();
         }
 
         private Scripts scripts() {

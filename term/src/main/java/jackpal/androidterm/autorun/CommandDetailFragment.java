@@ -48,12 +48,16 @@ public class CommandDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.command_detail, container, false);
         ButterKnife.bind(this, rootView);
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         readScript();
 
         ShowSoftKeyboard.onFocusOrClick(mNameView, mEditorView);
-
-        return rootView;
     }
 
     private void readScript() {

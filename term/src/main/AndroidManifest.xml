@@ -209,14 +209,12 @@
         <activity
             android:name=".autorun.CommandListActivity"
             android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
-            android:windowSoftInputMode="stateVisible"
             android:label="@string/scripts"
             android:exported="true">
         </activity>
         <activity
             android:name=".autorun.CommandDetailActivity"
             android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
-            android:windowSoftInputMode="stateVisible"
             android:label="@string/edit_script"
             android:parentActivityName=".autorun.CommandListActivity">
             <meta-data

@@ -6,16 +6,21 @@ import android.view.inputmethod.InputMethodManager;
 
 public class ShowSoftKeyboard {
     private static final View.OnFocusChangeListener SHOW_ON_FOCUS = (v, hasFocus) -> {
-        if (hasFocus) {
+        if (hasFocus)
             show(v);
-        }
     };
 
     private static final View.OnClickListener SHOW_ON_CLICK = ShowSoftKeyboard::show;
 
     public static void onFocus(View... views) {
         for (View view : views)
-            view.setOnFocusChangeListener(SHOW_ON_FOCUS);
+            onFocus(view);
+    }
+
+    public static void onFocus(View view) {
+        view.setOnFocusChangeListener(SHOW_ON_FOCUS);
+        if (view.hasFocus())
+            view.post(() -> show(view));
     }
 
     public static void onClick(View... views) {
@@ -25,8 +30,8 @@ public class ShowSoftKeyboard {
 
     public static void onFocusOrClick(View... views) {
         for (View view : views) {
-            view.setOnFocusChangeListener(SHOW_ON_FOCUS);
-            view.setOnClickListener(SHOW_ON_CLICK);
+            onFocus(view);
+            onClick(view);
         }
     }
 
