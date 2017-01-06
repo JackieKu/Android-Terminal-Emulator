@@ -29,8 +29,8 @@ public class CommandDetailFragment extends Fragment {
     @BindView(R.id.script_name) EditText mNameView;
     @BindView(R.id.script_editor) EditText mEditorView;
 
-    private String mScriptName = "";
-    private String mContent = "";
+    private CharSequence mScriptName = "";
+    private CharSequence mContent = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,14 +81,14 @@ public class CommandDetailFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_save:
                 try {
-                    String newName = mNameView.getText().toString();
+                    CharSequence newName = mNameView.getText();
                     if (!Script.isValidName(newName)) {
                         mNameView.setError(getString(R.string.invalid_script_name));
                         if (TextUtils.isEmpty(newName))
                             mNameView.setText(mScriptName);
                         return true;
                     }
-                    if (!mScriptName.equals(newName)) {
+                    if (!TextUtils.equals(mScriptName, newName)) {
                         File oldPath = mScript.getFile();
                         File newPath = new File(oldPath.getParent(), newName + Script.EXTENSION);
                         if (oldPath.renameTo(newPath))
@@ -99,8 +99,8 @@ public class CommandDetailFragment extends Fragment {
                         }
                     }
 
-                    String newContent = mEditorView.getText().toString();
-                    if (!mContent.equals(newContent)) {
+                    CharSequence newContent = mEditorView.getText();
+                    if (!TextUtils.equals(mContent, newContent)) {
                         mScript.setContent(newContent);
                         mContent = newContent;
                     }

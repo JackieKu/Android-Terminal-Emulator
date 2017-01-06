@@ -65,12 +65,12 @@ public final class Script implements Comparable<Script> {
                 );
     }
 
-    static boolean isValidName(String name) {
+    static boolean isValidName(CharSequence name) {
         return !(
             TextUtils.isEmpty(name)
-            || ".".equals(name)
-            || "..".equals(name)
-            || name.contains("/")
+            || TextUtils.equals(".", name)
+            || TextUtils.equals("..", name)
+            || TextUtils.indexOf(name, '/') >= 0
         );
     }
 
