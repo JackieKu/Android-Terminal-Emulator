@@ -57,7 +57,7 @@ public final class Script implements Comparable<Script> {
         Files.write(content, mPath, StandardCharsets.UTF_8);
     }
 
-    public Single<Integer> run() {
+    public Single<Headless.Session> run() {
         return Headless.getInstance()
                 .flatMap(h -> h.newSession(". " + quoteForBash(getFile().getAbsolutePath()))
                     .setTitle(getName())

@@ -19,6 +19,7 @@ public class HeadlessTest {
 
         Headless.getInstance()
             .flatMap(h -> h.newSession("exec touch '" + f.getAbsolutePath() + "'").start())
+            .flatMap(s -> s.exitCode)
             .doOnSuccess(i -> assertThat(i, is(0)))
             .toCompletable()
             .await()

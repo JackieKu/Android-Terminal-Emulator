@@ -56,6 +56,7 @@ public class Scripts {
         return Observable.from(list())
             .filter(Script::isEnabled)
             .concatMap(script -> script.run()
+                .flatMap(session -> session.exitCode)
                 .onErrorReturn(e -> {
                     Log.e(TAG, "Cannot run " + script, e);
                     return RunResult.EXIT_EXECUTION_ERROR;

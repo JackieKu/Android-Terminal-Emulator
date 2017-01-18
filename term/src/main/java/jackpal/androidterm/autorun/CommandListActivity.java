@@ -36,8 +36,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 
-import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
-
 public class CommandListActivity extends Activity {
     private static final String TAG = "CommandListActivity";
 
@@ -226,9 +224,10 @@ public class CommandListActivity extends Activity {
 
                 mIdView.setText(script.getName());
 
-                mStartButton.setOnClickListener(v -> {
-                    script.run().subscribe();
-                    Toast.makeText(CommandListActivity.this, getString(R.string.script_running, script.getName()), Toast.LENGTH_SHORT).show();
+                mStartButton.setOnClickListener(v -> runScript(script, true));
+                mStartButton.setOnLongClickListener(v -> {
+                    runScript(script, false);
+                    return true;
                 });
 
                 //mEditButton.setOnClickListener(mPaneMode.onEditItem(script.getFile().getAbsolutePath()));
@@ -250,6 +249,14 @@ public class CommandListActivity extends Activity {
                     script.toggleEnabled();
                     notifyItemChanged(position);
                 });
+            }
+
+            private void runScript(Script script, boolean showUI) {
+                script.run().subscribe(session -> {
+                    if (showUI)
+                        session.showWindow(CommandListActivity.this);
+                });
+                Toast.makeText(CommandListActivity.this, getString(R.string.script_running, script.getName()), Toast.LENGTH_SHORT).show();
             }
         }
     }
