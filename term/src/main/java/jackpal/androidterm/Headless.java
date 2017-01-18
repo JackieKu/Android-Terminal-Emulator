@@ -1,6 +1,7 @@
 package jackpal.androidterm;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -69,7 +70,7 @@ public class Headless {
             return this;
         }
 
-        public Single<Integer> start() {
+        public Single<Session> start() {
             if (mService == null) {
                 Intent intent = new Intent(App.getInstance(), TermService.class);
                 if (!App.getInstance().bindService(intent, mConnection, BIND_AUTO_CREATE))
@@ -81,12 +82,12 @@ public class Headless {
             return startSession();
         }
 
-        private Single<Integer> startSession() {
+        private Single<Session> startSession() {
             String title = mTitle;
             if (title == null)
                 title = isExec(mCmdLine) ? mCmdLine.substring(5).trim() : mCmdLine;
 
-            TermSession session;
+            ShellTermSession session;
             try {
                 session = new ShellTermSession(mTermSettings != null ? mTermSettings : defaultSettings(), mCmdLine);
             } catch (IOException e) {
@@ -111,16 +112,36 @@ public class Headless {
             mSessions++;
 
             String handle = UUID.randomUUID().toString();
-            ((GenericTermSession)session).setHandle(handle);
+            session.setHandle(handle);
 
             session.initializeEmulator(80, 24);
 
-            return resultSubject.toSingle();
+            return Single.just(new Session(session, resultSubject.toSingle()));
+        }
+    }
+
+    public static class Session {
+        public final ShellTermSession termSession;
+        public final Single<Integer> exitCode;
+
+        public void showWindow(Context context) {
+            context.startActivity(selectWindow(context, termSession.getHandle()));
+        }
+
+        private Session(ShellTermSession termSession, Single<Integer> exitCode) {
+            this.termSession = termSession;
+            this.exitCode = exitCode;
         }
     }
 
     public static TermSettings defaultSettings() {
         return new TermSettings(App.getInstance().getResources(), PreferenceManager.getDefaultSharedPreferences(App.getInstance()));
+    }
+
+    private static Intent selectWindow(Context context, String windowHandle) {
+        return new Intent(RemoteInterface.PRIVACT_SWITCH_WINDOW)
+                .setComponent(new ComponentName(context, RemoteInterface.PRIVACT_ACTIVITY_ALIAS))
+                .putExtra(RemoteInterface.EXTRA_WINDOW_HANDLE, windowHandle);
     }
 
     private static boolean isExec(String cmdline) {

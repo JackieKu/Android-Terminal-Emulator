@@ -129,6 +129,7 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
     public static final int REQUEST_CHOOSE_WINDOW = 1;
     public static final String EXTRA_WINDOW_ID = "jackpal.androidterm.window_id";
     private int onResumeSelectWindow = -1;
+    private String onResumeSelectWindowHandle;
     private ComponentName mPrivateAlias;
 
     private PowerManager.WakeLock mWakeLock;
@@ -507,6 +508,18 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
     private void populateViewFlipper() {
         if (mTermService != null) {
             mTermSessions = mTermService.getSessions();
+
+            if (onResumeSelectWindowHandle != null) {
+                int i = 0;
+                for (TermSession s : mTermSessions) {
+                    if (onResumeSelectWindowHandle.equals(((ShellTermSession)s).getHandle())) {
+                        onResumeSelectWindow = i;
+                        break;
+                    }
+                    i++;
+                }
+                onResumeSelectWindowHandle = null;
+            }
 
             if (mTermSessions.size() == 0) {
                 try {
@@ -1070,6 +1083,8 @@ public class Term extends Activity implements UpdateCallback, SharedPreferences.
                 int target = intent.getIntExtra(RemoteInterface.PRIVEXTRA_TARGET_WINDOW, -1);
                 if (target >= 0) {
                     onResumeSelectWindow = target;
+                } else {
+                    onResumeSelectWindowHandle = intent.getStringExtra(RemoteInterface.EXTRA_WINDOW_HANDLE);
                 }
                 break;
         }
