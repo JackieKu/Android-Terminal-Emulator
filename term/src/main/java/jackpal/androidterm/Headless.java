@@ -76,13 +76,16 @@ public class Headless {
                 if (!App.getInstance().bindService(intent, mConnection, BIND_AUTO_CREATE))
                     throw new IllegalStateException("Cannot bind term service.");
 
-                return mServiceSubject.first().toSingle().flatMap(termService -> startSession());
+                return mServiceSubject.first().toSingle()
+                    .map(termService -> startSession())
+                    .cache()
+                    ;
             }
 
-            return startSession();
+            return Single.just(startSession());
         }
 
-        private Single<Session> startSession() {
+        private Session startSession() {
             String title = mTitle;
             if (title == null)
                 title = isExec(mCmdLine) ? mCmdLine.substring(5).trim() : mCmdLine;
@@ -116,7 +119,7 @@ public class Headless {
 
             session.initializeEmulator(80, 24);
 
-            return Single.just(new Session(session, resultSubject.toSingle()));
+            return new Session(session, resultSubject.toSingle());
         }
     }
 

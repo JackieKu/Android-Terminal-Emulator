@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jackpal.androidterm.Headless;
 import jackpal.androidterm.R;
 
 import jackpal.androidterm.util.ShowSoftKeyboard;
@@ -224,9 +225,9 @@ public class CommandListActivity extends Activity {
 
                 mIdView.setText(script.getName());
 
-                mStartButton.setOnClickListener(v -> runScript(script, true));
+                mStartButton.setOnClickListener(v -> runScript(script).subscribe(s -> s.showWindow(CommandListActivity.this)));
                 mStartButton.setOnLongClickListener(v -> {
-                    runScript(script, false);
+                    runScript(script).subscribe();
                     return true;
                 });
 
@@ -251,12 +252,9 @@ public class CommandListActivity extends Activity {
                 });
             }
 
-            private void runScript(Script script, boolean showUI) {
-                script.run().subscribe(session -> {
-                    if (showUI)
-                        session.showWindow(CommandListActivity.this);
-                });
+            private Single<Headless.Session> runScript(Script script) {
                 Toast.makeText(CommandListActivity.this, getString(R.string.script_running, script.getName()), Toast.LENGTH_SHORT).show();
+                return script.run();
             }
         }
     }
