@@ -292,6 +292,12 @@
                 android:title="@string/title_hw_acceleration_by_default_preference"
                 android:summary="@string/summary_hw_acceleration_by_default_preference" />
 
+        <CheckBoxPreference
+            android:key="use_english"
+            android:defaultValue="false"
+            android:title="English language"
+            android:summary="Display English in the UI regardless the system settings." />
+
     </PreferenceCategory>
 
     <!--

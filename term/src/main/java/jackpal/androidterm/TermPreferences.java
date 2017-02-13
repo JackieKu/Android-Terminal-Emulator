@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
+import im.delight.android.languages.Language;
 import jackpal.androidterm.compat.ActionBarCompat;
 import jackpal.androidterm.compat.ActivityCompat;
 import jackpal.androidterm.compat.AndroidCompat;
@@ -33,6 +34,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
+import android.preference.TwoStatePreference;
 import android.view.MenuItem;
 
 public class TermPreferences extends PreferenceActivity {
@@ -146,5 +148,13 @@ public class TermPreferences extends PreferenceActivity {
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Language.set(getApplication(),
+                ((TwoStatePreference)findPreference("use_english")).isChecked() ? "en-rUS" : "", true);
     }
 }
