@@ -1,22 +1,19 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-task wrapper (type:Wrapper) {
-    gradleVersion = '3.1.0'
-    distributionUrl = 'https://services.gradle.org/distributions/gradle-3.1-all.zip'
-}
 
 buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.5.3'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
